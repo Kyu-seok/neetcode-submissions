@@ -1,0 +1,45 @@
+class Solution {
+    public String minWindow(String s, String t) {
+        Map<Character, Integer> target = new HashMap<>();
+
+        for (char c : t.toCharArray()) {
+            target.merge(c, 1, Integer::sum);
+        }
+
+        int required = target.size();
+        int have = 0;
+        int minLength = Integer.MAX_VALUE;
+        
+        int start = 0;
+        int left = 0;
+        int right = 0;
+
+        Map<Character, Integer> window = new HashMap<>();
+
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            window.merge(c, 1, Integer::sum);
+            if (target.containsKey(c) && target.get(c).equals(window.get(c))) {
+                have++;
+            }
+
+            while (have == required) {
+
+                if (right - left + 1 < minLength) {
+                    minLength = right - left + 1;
+                    start = left;
+                }
+
+                char leftChar = s.charAt(left);
+                window.merge(leftChar, -1, Integer::sum);
+                if (target.containsKey(leftChar) && target.get(leftChar).intValue() > window.get(leftChar).intValue()) {
+                    have--;
+                }
+                left++;
+            }
+            right++;
+        }
+
+        return (minLength == Integer.MAX_VALUE) ? "" : s.substring(start, start + minLength);
+    }
+}
